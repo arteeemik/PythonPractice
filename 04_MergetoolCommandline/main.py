@@ -141,6 +141,54 @@ class PyNamesShell(cmd.Cmd):
 
         return
 
+    def complete_language(self, prefix, allcmd, beg, end):
+        return [helpp for helpp in LANGUAGE.ALL if helpp.startswith(prefix)]
+
+    def complete_generate(self, prefix, allcmd, beg, end):
+        _, *args = allcmd.split()
+        len_args = len(args)
+        for i in range(args):
+            args[i] = args[i].lower()
+        if prefix == '':
+            len_args += 1
+
+        variants = []
+        if len_args == 1:
+            variants = list(self.generators.keys())
+        else:
+            class_ = args[0]
+            if len_args == 2:
+                variants = list(self.generators.get(class_, {}).keys())
+                new_variants = list(self.genders.keys())
+                for i in new_variants:
+                    variants.append(i)
+            elif len_args == 3:
+                variants = list(self.genders.keys())
+        return [helpp for helpp in variants if helpp.startswith(prefix)]
+
+    def complete_info(self, prefix, allcmd, beg, end):
+        _, *args = allcmd.split()
+        len_args = len(args)
+        for i in range(args):
+            args[i] = args[i].lower()
+
+        if prefix == '':
+            len_args += 1
+
+        variants = []
+        if len_args == 1:
+            variants = list(self.generators.keys())
+        else:
+            class_ = args[0]
+            if len_args == 2:
+                variants = list(self.generators.get(class_, {}).keys())
+                new_variants = list(self.genders.keys()) + ['language']
+                for i in new_variants:
+                    variants.append(i)
+            elif len_args == 3:
+                variants = list(self.genders.keys()) + ['language']
+        return [helpp for helpp in variants if helpp.startswith(prefix)]
+
     def do_exit(self, args):
         return True
 
